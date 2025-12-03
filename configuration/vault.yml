@@ -1,0 +1,15 @@
+# Ansible Vault file for CMU 302 credentials
+# Encrypt this file using: ansible-vault encrypt vault.yml
+# Edit using: ansible-vault edit vault.yml
+
+---
+# User passwords (replace with actual passwords from KeePass)
+vault_ladmin_password: "CHANGE_ME_FROM_KEEPASS"
+vault_lab_password: "CHANGE_ME_FROM_KEEPASS"
+
+# Administrator password (for initial connection)
+vault_admin_password: "password"
+
+# Optional: Store other sensitive information
+vault_cdspace_username: ""
+vault_cdspace_password: ""
