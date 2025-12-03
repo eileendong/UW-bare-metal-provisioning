@@ -1,0 +1,79 @@
+# Quick deployment playbook - essential tasks not full configuration
+# PXE → Windows Install → WinRM Setup → Ansible
+- name: CMU 302 Quick Workstation Setup
+  hosts: windows_workstations
+  gather_facts: yes
+  
+  vars_files:
+    - vault.yml
+  
+  vars:
+    cdspace_root: "\\\\cdspace.com.washington.edu\\instructions"
+    
+  tasks:
+    - name: Set PowerShell execution policy
+      win_shell: Set-ExecutionPolicy RemoteSigned -Force
+      args:
+        executable: powershell.exe
+
+    - name: Create ladmin and Lab users
+      win_user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        password_never_expires: yes
+        groups: "{{ item.groups }}"
+        state: present
+      loop:
+        - { name: 'ladmin', password: '{{ vault_ladmin_password }}', groups: ['Administrators'] }
+        - { name: 'Lab', password: '{{ vault_lab_password }}', groups: ['Users'] }
+
+    - name: Install essential software via Winget
+      win_shell: |
+        $apps = @(
+          'Google.Chrome',
+          'Python.Python.3.13',
+          'VideoLAN.VLC',
+          'Zoom.Zoom',
+          'GIMP.GIMP.3'
+        )
+        foreach ($app in $apps) {
+          winget install --id $app --silent --accept-package-agreements --accept-source-agreements
+        }
+      args:
+        executable: powershell.exe
+
+    - name: Configure auto-logon for Lab user
+      win_regedit:
+        path: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+        name: "{{ item.name }}"
+        data: "{{ item.data }}"
+        type: string
+      loop:
+        - { name: 'AutoAdminLogon', data: '1' }
+        - { name: 'DefaultUserName', data: 'Lab' }
+        - { name: 'DefaultPassword', data: '{{ vault_lab_password }}' }
+
+    - name: Create SaveMe folder
+      win_file:
+        path: "C:\\Users\\Lab\\Desktop\\SaveMe"
+        state: directory
+
+    - name: Enable and configure UWF
+      win_shell: |
+        Enable-WindowsOptionalFeature -Online -FeatureName Client-UnifiedWriteFilter -NoRestart
+        uwfmgr overlay set-type disk
+        uwfmgr overlay set-size 20000
+        uwfmgr volume protect c:
+        uwfmgr file add-exclusion "C:\Users\Lab\Desktop\SaveMe"
+        uwfmgr filter enable
+      args:
+        executable: powershell.exe
+
+    - name: Disable Administrator account
+      win_user:
+        name: Administrator
+        account_disabled: yes
+
+    - name: Reboot
+      win_reboot:
+        reboot_timeout: 600

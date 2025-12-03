@@ -1,0 +1,76 @@
+---
+# Minimal test playbook - just installs a few apps to verify Ansible works
+- name: Test CMU 302 Software Installation
+  hosts: test_computer
+  gather_facts: yes
+  
+  tasks:
+    - name: Test connection
+      win_ping:
+      
+    - name: Display Windows version
+      debug:
+        msg: "Connected to {{ ansible_hostname }} running {{ ansible_os_family }}"
+    
+    - name: Set PowerShell execution policy
+      win_shell: |
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force
+      args:
+        executable: powershell.exe
+    
+    - name: Check if Winget is available
+      win_shell: |
+        winget --version
+      register: winget_check
+      failed_when: false
+      
+    - name: Display Winget status
+      debug:
+        msg: "Winget version: {{ winget_check.stdout }}"
+      when: winget_check.rc == 0
+    
+    - name: Install Google Chrome (test)
+      win_shell: |
+        winget install --id Google.Chrome --silent --accept-package-agreements --accept-source-agreements
+      args:
+        executable: powershell.exe
+      register: chrome_install
+      
+    - name: Install VLC (test)
+      win_shell: |
+        winget install --id VideoLAN.VLC --silent --accept-package-agreements --accept-source-agreements
+      args:
+        executable: powershell.exe
+      register: vlc_install
+    
+    - name: Install Python 3.13 (test)
+      win_shell: |
+        winget install --id Python.Python.3.13 --silent --accept-package-agreements --accept-source-agreements
+      args:
+        executable: powershell.exe
+      register: python_install
+    
+    - name: Create test user (ladmin)
+      win_user:
+        name: ladmin
+        password: TestPassword123!
+        password_never_expires: yes
+        groups:
+          - Administrators
+        state: present
+    
+    - name: Verify installations
+      win_shell: |
+        Write-Host "=== Installed Software ==="
+        Get-Package | Where-Object {$_.Name -like "*Chrome*" -or $_.Name -like "*VLC*" -or $_.Name -like "*Python*"} | Select-Object Name, Version
+      args:
+        executable: powershell.exe
+      register: installed_software
+    
+    - name: Display installed software
+      debug:
+        var: installed_software.stdout_lines
+    
+    - name: Test complete
+      debug:
+        msg: "✅ Test completed successfully! Ansible can manage this Windows computer."
