@@ -1,0 +1,4 @@
+Process
+We're using Microsoft's Windows Deployment Services to take an existing Windows 11 install image (provided by UW) and automating the install of Windows 11 Enterprise and any subsequent software configuration.
+
+The complicated part is getting the process defined ahead of time. You're not actually creating a single image, but rather creating an environment to boot from an remote client, copy over the necessary Windows files, automatically install and configure all of the software needed from the server, and make any configuration changes needed to the client system. Some things might go wrong, so you may need to go through and adjust things after the fact, but having an automated deployment system will save time and ensure we have identical environments for each system.
