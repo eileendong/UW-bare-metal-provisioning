@@ -1,4 +1,8 @@
-Process
-We're using Microsoft's Windows Deployment Services to take an existing Windows 11 install image (provided by UW) and automating the install of Windows 11 Enterprise and any subsequent software configuration.
+CMU 302 Workstation Ansible Deployment
+This Ansible playbook automates the post-PXE configuration of Windows 11 workstations in CMU 302, replacing the manual steps and MDT scripts from the previous deployment process.
+Architecture Overview
 
-The complicated part is getting the process defined ahead of time. You're not actually creating a single image, but rather creating an environment to boot from an remote client, copy over the necessary Windows files, automatically install and configure all of the software needed from the server, and make any configuration changes needed to the client system. Some things might go wrong, so you may need to go through and adjust things after the fact, but having an automated deployment system will save time and ensure we have identical environments for each system.
+PXE Boot → Windows 11 Enterprise installed via MDT/WDS
+WinRM Configuration → Enable remote management (last MDT task)
+Ansible Playbook → Complete software installation and configuration
+Result → Fully configured workstation with UWF enabled
