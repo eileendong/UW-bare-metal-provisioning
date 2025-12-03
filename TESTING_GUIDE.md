@@ -1,14 +1,14 @@
 # Quick Test Guide - Single Windows Computer
 
 ## Prerequisites
-- ✅ Windows computer with Windows already installed
-- ✅ Administrator access to Windows computer
-- ✅ Linux/WSL machine for Ansible control
-- ✅ Both computers on same network
+-  Windows computer with Windows already installed
+-  Administrator access to Windows computer
+-  Linux/WSL machine for Ansible control
+-  Both computers on same network
 
 ## Step-by-Step Test
 
-### 1️⃣ Prepare Windows Computer (5 minutes)
+### 1️ Prepare Windows Computer (5 minutes)
 
 Open PowerShell as Administrator on Windows and run:
 
@@ -35,9 +35,9 @@ Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
 Test-WSMan -ComputerName localhost
 ```
 
-If the last command shows XML output, WinRM is working! ✅
+If the last command shows XML output, WinRM is working
 
-### 2️⃣ Set Up Ansible Control Machine (5 minutes)
+### 2️ Set Up Ansible Control Machine (5 minutes)
 
 On your Linux/WSL machine:
 
@@ -53,7 +53,7 @@ ansible-galaxy collection install community.windows
 ansible --version
 ```
 
-### 3️⃣ Configure Test Files (2 minutes)
+### 3️ Configure Test Files (2 minutes)
 
 Edit `test-inventory.ini`:
 
@@ -77,7 +77,7 @@ ansible_port=5985
 - `Administrator` → Your Windows username
 - `YourActualPassword` → Your Windows password
 
-### 4️⃣ Test Connection (1 minute)
+### 4 Test Connection (1 minute)
 
 ```bash
 # Simple ping test
@@ -92,7 +92,7 @@ ansible test_computer -i test-inventory.ini -m win_ping
 
 If you see "SUCCESS" and "pong", you're connected! 🎉
 
-### 5️⃣ Run Test Playbook (5-10 minutes)
+### 5️ Run Test Playbook (5-10 minutes)
 
 ```bash
 # Run the test playbook
@@ -103,12 +103,12 @@ ansible-playbook -i test-inventory.ini test-playbook.yml -vv
 ```
 
 This will:
-- ✅ Test connection
-- ✅ Install Google Chrome
-- ✅ Install VLC
-- ✅ Install Python 3.13
-- ✅ Create a test "ladmin" user
-- ✅ Verify everything installed
+-  Test connection
+-  Install Google Chrome
+-  Install VLC
+-  Install Python 3.13
+-  Create a test "ladmin" user
+-  Verify everything installed
 
 ### 6️⃣ Verify on Windows
 
@@ -120,30 +120,30 @@ On your Windows computer, check:
 
 ## Troubleshooting
 
-### ❌ "Connection timeout" or "Connection refused"
+### "Connection timeout" or "Connection refused"
 **Fix:**
 1. Check firewall on Windows (port 5985)
 2. Verify WinRM service is running: `Get-Service WinRM`
 3. Test WinRM locally on Windows: `Test-WSMan localhost`
 4. Ping the Windows computer from Linux: `ping 192.168.1.100`
 
-### ❌ "Bad HTTP authentication header"
+### "Bad HTTP authentication header"
 **Fix:**
 1. Check username/password in inventory.ini
 2. Make sure Basic auth is enabled in WinRM (see step 1)
 
-### ❌ "Network path not found"
+### "Network path not found"
 **Fix:**
 1. Ensure network profile is Private: `Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private`
 2. Restart WinRM service: `Restart-Service WinRM`
 
-### ❌ "Winget not found" during software installation
+### "Winget not found" during software installation
 **Fix:**
 1. Windows 11: Winget should be pre-installed
 2. Windows 10: Install App Installer from Microsoft Store
 3. Or install manually: https://github.com/microsoft/winget-cli/releases
 
-### ❌ Software installation fails
+### Software installation fails
 **Fix:**
 1. Verify internet connection on Windows computer
 2. Try installing manually first: `winget install Google.Chrome`

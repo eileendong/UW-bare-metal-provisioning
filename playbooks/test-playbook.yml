@@ -1,5 +1,5 @@
 ---
-# Minimal test playbook - just installs a few apps to verify Ansible works
+# Minimal test playbook 
 - name: Test CMU 302 Software Installation
   hosts: test_computer
   gather_facts: yes
@@ -73,4 +73,4 @@
     
     - name: Test complete
       debug:
-        msg: "✅ Test completed successfully! Ansible can manage this Windows computer."
+        msg: "Test completed successfully! Ansible can manage this Windows computer."
