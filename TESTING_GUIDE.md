@@ -224,6 +224,9 @@ After test completes:
 - [ ] VLC installed
 - [ ] Python installed
 - [ ] ladmin user created
+- [ ] 
+update chris: christopher@wherestarsend.com
+
 
 ---
 
