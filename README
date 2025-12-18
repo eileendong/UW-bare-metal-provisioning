@@ -1,8 +1,0 @@
-CMU 302 Workstation Ansible Deployment
-This Ansible playbook automates the post-PXE configuration of Windows 11 workstations in CMU 302, replacing the manual steps and MDT scripts from the previous deployment process.
-Architecture Overview
-
-PXE Boot → Windows 11 Enterprise installed via MDT/WDS
-WinRM Configuration → Enable remote management (last MDT task)
-Ansible Playbook → Complete software installation and configuration
-Result → Fully configured workstation with UWF enabled
