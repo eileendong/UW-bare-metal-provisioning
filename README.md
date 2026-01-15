@@ -1,0 +1,25 @@
+# CMU 302 Workstation Ansible Deployment
+This Ansible playbook automates the post-PXE configuration of Windows 11 workstations in CMU 302, replacing the manual steps and MDT scripts from the previous deployment process.
+
+## Architecture Overview
+
+PXE Boot → Windows 11 Enterprise installed via MDT/WDS
+WinRM Configuration → Enable remote management (last MDT task)
+Ansible Playbook → Complete software installation and configuration
+Result → Fully configured workstation with UWF enabled
+
+## Notes
+The overview looks reasonable. Enabling WinRM requires making sure the system is attached as on a Private network.
+
+`Get-NetConnectionProfile`
+`Set-NetConnectionProfile -NetworkCategory Private`
+
+Afterwards, you'll want to run:
+
+`Enable-PSRemoting`
+
+This will enable WinRM functionality, enabling the listener, the WinRM Service, and allowing a WinRM firewall exception. It additionally adds a REG_DWORD key at `Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\LocalAccountTokenFilterPolicy` with a value of 1. This allows remote users the ability to perform administrative tasks.
+
+This has security implications - any system with this enabled will be more open to possible security intrusion over the network, so it requires proper authentication at the very least (and ideally I'd limit reception to approved server IPs). I've noticed that the next step in the TESTING_GUIDE.md suggests an unencrypted authentication procedure. This makes me wary, so I'll look into that and see if there's a better option. We don't want to risk exposing admin credentials for any of our systems.
+
+So one option seems to be creating our own certificate and basically acting as our own CA. We'd have to install the CA cert on each machine we'd want to manage, but this isn't terribly difficult and would be safer for the initial ingest of the machine into our Ansible environment. [Here is an example](https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/) for how to setup the CA. We may have to make some modifications to make it fit our use case.
